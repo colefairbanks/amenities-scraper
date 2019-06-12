@@ -1,6 +1,14 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Jun 12 11:48:07 2019
+
+@author: Sam Giampapa
+"""
+
 from bs4 import BeautifulSoup
 from requests import get
 import pandas as pd
+import openpyxl
 import seaborn as sns
 sns.set()
 
@@ -30,3 +38,16 @@ for table in rent_roll.find_all('td'):
 
 print(rent_roll)
 pd.DataFrame(x)
+
+wb = openpyxl.Workbook()
+sheet = wb.get_active_sheet()
+sheet.title = "Scraped Data"
+wb.get_sheet_names()
+
+from openpyxl.utils.dataframe import dataframe_to_rows
+for r in dataframe_to_rows(pd.DataFrame(x), index=True, header=True):
+    sheet.append(r)
+# =============================================================================
+# Replace the text within 'quotes' to the desired excel file name. don't forget .xlsx at the end
+wb.save('waterford.xlsx')
+#==============================================================================
