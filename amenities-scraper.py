@@ -15,7 +15,7 @@ sns.set()
 headers = ({'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36'})
 # =============================================================================
 # Copy and paste the apartments.com url of specific property below within "quotations"
-property_name_url = "https://www.apartments.com/the-paramount-houston-tx/3v6nttg/"
+property_name_url = "https://www.apartments.com/the-waterford-morrisville-nc/yvq7spr/"
 #==============================================================================
 
 response = get(property_name_url, headers=headers)
@@ -33,11 +33,27 @@ rent_roll = rent_roll_containers[0]
 rent_roll
 
 x = []
-for table in rent_roll.find_all('td'):
-    x.append({'Rent Roll': table.get_text()})
-
+for column in rent_roll.find_all('td', class_='beds'):
+    x.append({'Rent Roll': column.get_text()})
+  
+    
+y = []
+for column in rent_roll.find_all('td', class_='baths'):
+    y.append({'Rent Roll': column.get_text()})
+    
+z = []
+for column in rent_roll.find_all('td', class_='rent'):
+    z.append({'Rent Roll': column.get_text()})
+    
+a = []
+for column in rent_roll.find_all('td', class_='name'):
+    a.append({'Rent Roll': column.get_text()})
+    
 print(rent_roll)
-pd.DataFrame(x)
+df = pd.DataFrame(x)
+df = pd.DataFrame(y)
+df = pd.DataFrame(z)
+df = pd.DataFrame(a)
 
 wb = openpyxl.Workbook()
 sheet = wb.get_active_sheet()
@@ -45,7 +61,7 @@ sheet.title = "Scraped Data"
 wb.get_sheet_names()
 
 from openpyxl.utils.dataframe import dataframe_to_rows
-for r in dataframe_to_rows(pd.DataFrame(x), index=True, header=True):
+for r in dataframe_to_rows(pd.DataFrame(x) + pd.DataFrame(y) + pd.DataFrame(z) + pd.DataFrame(a), index=True, header=True):
     sheet.append(r)
 # =============================================================================
 # Replace the text within 'quotes' to the desired excel file name. don't forget .xlsx at the end
