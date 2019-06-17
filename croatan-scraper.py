@@ -47,6 +47,9 @@ amenities = amenities_containers[0]
 for link in amenities.find_all('li'):
     a.append({'Amenities': link.get_text().replace('•','')})
 
+#==============================================================================
+#Sam's dataframe portion
+    
 #unit mix
 unit_mix_containers = html_soup.find_all('div', class_="tabContent active")
 unit_mix = unit_mix_containers[0]
@@ -60,7 +63,7 @@ for column in unit_mix.find_all('span', class_='longText'):
     
 ba = []
 baths_containers = html_soup.find_all('td', class_="baths")
-amenities = amenities_containers[0]
+baths = baths_containers[0]
 for column in unit_mix.find_all('span', class_="longText"):
     ba.append({'Baths': column.get_text()})
     
@@ -69,24 +72,28 @@ for column in unit_mix.find_all('td', class_='rent'):
     rent.append({'Rent': column.get_text()})
     
 name = []
+sep = ')'
+sep2 = '('
 for column in unit_mix.find_all('td', class_='name'):
-    name.append({'Name': column.get_text()})
+    name.append({'Name': column.get_text().replace('(','').split(sep, 1)[0]})  
     
 cols = ['Bed', 'Baths', 'Rents']
 
-df = pd.DataFrame({'Bed': bed,
-                           'Baths': bath,
+df = pd.DataFrame({'Bed': beds,
+                           'Baths': baths,
                            'Rents': rent})[cols]
 
 from openpyxl.utils.dataframe import dataframe_to_rows
-dataframe_to_rows(pd.DataFrame({'Bed': bed, 'Baths': bath, 'Rents': rent})[cols])
+dataframe_to_rows(pd.DataFrame({'Bed': beds, 'Baths': baths, 'Rents': rent})[cols])
 # =============================================================================
-# Replace the text within 'quotes' to the desired excel file name. don't forget .xlsx at the end
-wb = openpyxl.Workbook()
-sheet = wb.get_active_sheet()
-wb.save('test123.xls')
-sheet = wb.get_sheet_by_name('Market Survey')
+
+# Replace the text within 'quotes' to the desired excel file name. don't forget .xlsm at the end
+wb = openpyxl.load_workbook('market_survey_test.xlsm')
+wb.sheetnames
+sheet = wb['Market Survey']
 sheet['G5'] = property_name
 sheet['G6'] = address
+sheet['G7'] = city_state
 sheet['G12'] = URL
+wb.save('test123.xlsx')
 #==============================================================================
